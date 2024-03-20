@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backend.springstore.order.mapper.OrderMapper">
+    <resultMap id="orderMap" type="com.backend.springstore.order.pojo.vo.OrderVO">
+        <id column="oid" property="id"/>
+        <result column="recv_name" property="recvName"/>
+        <result column="total_price" property="totalPrice"/>
+        <result column="status" property="status"/>
+        <result column="order_time" property="orderTime"/>
+        <collection property="orderItemVOList" ofType="com.backend.springstore.order.pojo.vo.OrderItemVO"
+                    column="order_id">
+            <id column="mid" property="id"/>
+            <result column="product_id" property="productId"/>
+            <result column="image" property="image"/>
+            <result column="num" property="num"/>
+            <result column="price" property="price"/>
+            <result column="order_id" property="orderId"/>
+            <result column="title" property="title"/>
+        </collection>
+    </resultMap>
+    <insert id="creatOrder" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_order(user_id,
+                            recv_name,
+                            recv_phone,
+                            recv_province,
+                            recv_city,
+                            recv_area,
+                            recv_address,
+                            status,
+                            total_price,
+                            order_time,
+                            is_delete,
+                            created_user,
+                            created_time)values (#{userId},#{recvName},#{recvPhone},#{recvProvince},
+                                                 #{recvCity},#{recvArea},#{recvAddress},#{status},
+                                                 #{totalPrice},now(),#{isDelete},#{createdUser},
+                                                 now())
+    </insert>
+    <insert id="creatOrderItem">
+        insert into t_order_item(order_id,
+                                 product_id,
+                                 num,
+                                 price,
+                                 image,
+                                 title,
+                                 created_user,
+                                 created_time)values (#{orderId},
+                                                      #{productId},
+                                                      #{num},
+                                                      #{price},
+                                                      #{image},
+                                                      #{title},
+                                                      #{createdUser},
+                                                      now())
+    </insert>
+    <!--获取用户的订单-->
+    <select id="getOrderList" resultMap="orderMap">
+        select
+            t_order.id oid,
+            recv_name,
+            status,
+            total_price,
+            order_time,
+            t_order_item.id mid,
+            order_id,
+            product_id,
+            num,
+            price,
+            image,
+            title
+        from t_order
+            inner join t_order_item
+            on t_order.id = t_order_item.id
+        where t_order.user_id=#{userId} and is_delete=0
+    </select>
+
+    <update id="updateOrderPaid" parameterType="com.backend.springstore.order.pojo.entity.Order">
+        update t_order
+        set status=#{status},
+            pay_time=now(),
+            modified_user=#{modifiedUser},
+            modified_time=now()
+        where id=#{id}
+    </update>
+    <update id="updateOrderTakeDelivery">
+        update t_order
+        set status=#{status},
+            modified_user=#{modifiedUser},
+            modified_time=now()
+        where id=#{id}
+    </update>
+    <update id="updateOrderAddress">
+        update t_order
+            set recv_province =#{recvProvince},
+                recv_city=#{recvCity},
+                recv_area=#{recvArea},
+                recv_address=#{recvAddress},
+                modified_user=#{modifiedUser},
+                modified_time=now()
+            where t_order.id=#{id}
+    </update>
+
+    <resultMap id="map1" type="com.backend.springstore.order.pojo.entity.Order" autoMapping="true">
+        <result column="user_id" property="userId"/>
+        <result column="recv_name" property="recvName"/>
+        <result column="recv_phone" property="recvPhone"/>
+        <result column="recv_province" property="recvProvince"/>
+        <result column="recv_city" property="recvCity"/>
+        <result column="recv_area" property="recvArea"/>
+        <result column="recv_address" property="recvAddress"/>
+        <result column="total_price" property="totalPrice"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="pay_time" property="payTime"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+    <select id="getOrderById" resultMap="map1">
+        select * from t_order where id=#{id}
+    </select>
+    <select id="getNoPaidOrderList" resultMap="orderMap">
+        select
+            t_order.id oid,
+            recv_name,
+            status,
+            total_price,
+            order_time,
+            t_order_item.id mid,
+            order_id,
+            product_id,
+            num,
+            price,
+            image,
+            title
+        from t_order
+                 inner join t_order_item
+                            on t_order.id = t_order_item.order_id
+        where t_order.user_id=#{userId} and is_delete=0 and status=#{status}
+    </select>
+    <!--获取全部订单-->
+    <select id="getAllList" resultMap="orderMap">
+        select
+            t_order.id oid,
+            recv_name,
+            status,
+            total_price,
+            order_time,
+            t_order_item.id mid,
+            order_id,
+            product_id,
+            num,
+            price,
+            image,
+            title
+        from t_order
+                 inner join t_order_item
+                            on t_order.id = t_order_item.order_id
+    </select>
+
+    <select id="countOrder" resultType="java.lang.Integer">
+        select count(1) from t_order
+    </select>
+    <select id="getPriceList" resultType="java.lang.Double">
+        select total_price from t_order
+    </select>
+
+    <delete id="deleteOrder">
+        delete from t_order where t_order.id = #{orderId}
+    </delete>
+    <delete id="deleteOrderItem">
+        delete from t_order_item where t_order_item.order_id = #{orderId}
+    </delete>
+    <select id="getAllOrderList" resultType="com.backend.springstore.order.pojo.vo.OrderManageVO">
+        select  t1.id as id,tu.username as username,t1.user_id as userId,t1.recv_name as recvName,
+                t1.recv_province as recvProvince,t1.recv_city as recvCity,t1.recv_area as recvArea,
+                t1.recv_address as recvAddress,t1.status as status,t1.total_price as totalPrice,
+                t1.order_time as orderTime
+        from t_order t1,t_user tu
+        where t1.user_id = tu.id
+            limit #{offset},#{pageSize}
+    </select>
+    <select id="countList" resultType="java.lang.Integer">
+        select count(t1.id)
+        from t_order t1,t_user tu
+        where t1.user_id = tu.id
+    </select>
+    <select id="getUserOrderList" resultType="com.backend.springstore.order.pojo.vo.OrderManageVO">
+        select  t1.id as id,tu.username as username,t1.user_id as userId,t1.recv_name as recvName,
+                t1.recv_province as recvProvince,t1.recv_city as recvCity,t1.recv_area as recvArea,
+                t1.recv_address as recvAddress,t1.status as status,t1.total_price as totalPrice,
+                t1.order_time as orderTime
+        from t_order t1,t_user tu
+        where t1.user_id = #{userId} and tu.id = #{userId}
+    </select>
+    <select id="getOrderBuOrderId" resultType="com.backend.springstore.order.pojo.vo.OrderManageVO">
+        select  t1.id as id,t1.user_id as userId,t1.recv_name as recvName,
+                t1.recv_province as recvProvince,t1.recv_city as recvCity,t1.recv_area as recvArea,
+                t1.recv_address as recvAddress,t1.status as status,t1.total_price as totalPrice,
+                t1.order_time as orderTime
+        from t_order t1
+        where t1.id = #{orderId}
+    </select>
+</mapper>

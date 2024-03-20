@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backend.springstore.favorite.mapper.FavoriteMapper">
+
+    <!--获取收藏商品-->
+    <select id="getFavoriteByUserId" resultType="com.backend.springstore.favorite.pojo.entity.Favorite">
+        select * from t_favorite where product_id=#{productId} and user_id=#{userId}
+    </select>
+    <!--获取用户喜欢的商品ID-->
+    <select id="getFavoriteProductIdListByUserId" resultType="java.lang.Integer">
+        select product_id from t_favotite where user_id=#{userId}
+    </select>
+    <!--查询用户收藏的数量-->
+    <select id="countByUserId" resultType="java.lang.Integer">
+        select count(1) from t_favorite where user_id=#{userId}
+    </select>
+    <!--收藏商品分类查询-->
+    <select id="getFavoriteProductByPage" resultType="com.backend.springstore.product.pojo.entity.Product">
+        select
+            p.id,
+            p.title,
+            p.price,
+            p.image
+        from
+            t_favorite f
+                inner join t_product p on f.product_id = p.id
+        where
+            f.user_id = #{userId} limit #{offset},#{pageSize}
+    </select>
+
+    <select id="countFavorite" resultType="java.lang.Integer">
+        select count(1) from t_favorite
+    </select>
+    <!--新增收藏-->
+    <insert id="addFavorite">
+        insert into t_favorite
+            ( user_id, product_id, created_user, created_time)
+        values
+            (#{userId},#{productId},#{createdUser},now());
+    </insert>
+    <!--删除收藏-->
+    <delete id="deleteFavorite">
+        delete  from t_favorite where product_id=#{productId} and user_id=#{userId}
+    </delete>
+</mapper>

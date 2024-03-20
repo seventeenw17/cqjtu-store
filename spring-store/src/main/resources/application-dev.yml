@@ -1,0 +1,40 @@
+server:
+  port: 6081 # 设置端口
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/storedb?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: wangjing
+
+#  jackson:
+#    default-property-inclusion: non_null # 空值不返回
+mybatis:
+  type-aliases-package: com.backend.springstore
+  mapper-locations: classpath:mappers/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    com.backend.springstore: debug
+
+knife4j:
+  enable: true #增强
+  production: false #不用于生产
+  openapi:
+    title: CQJTU商城后端接口文档 #标题
+    description: API文档 #描述
+    email: wangjing07060510@outlook.com
+    concat: WangJing
+    url: https://v.highedu.cn/
+    version: v1.0
+    license: Apache 2.0
+    #license-url: https://stackoverflow.com/
+    #terms-of-service-url: https://stackoverflow.com/
+    group:
+      test1:
+        group-name: 用户API文档
+        api-rule: package #扫描包
+        api-rule-resources:
+          - com.backend.springstore.user #具体的包路径

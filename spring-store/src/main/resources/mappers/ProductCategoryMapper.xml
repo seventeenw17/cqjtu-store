@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backend.springstore.product.mapper.ProductCategoryMapper">
+    <resultMap id="productCategoryMap" type="com.backend.springstore.product.pojo.entity.ProductCategory">
+        <id column="id" property="id"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="is_parent" property="isParent"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+    <!--获取商品种类列表-->
+    <select id="getProductCategoryList" resultMap="productCategoryMap">
+        select * from t_product_category where parent_id=#{parentId}
+    </select>
+    <!--根据ID查询种类-->
+    <select id="getCategoryById" resultMap="productCategoryMap">
+        select * from t_product_category where id=#{id}
+    </select>
+    <select id="getAllProductCategoryList" resultMap="productCategoryMap">
+        select * from t_product_category
+    </select>
+    <!--获取父类ID-->
+    <select id="getParentIdInteger" resultType="java.lang.Integer">
+        select parent_id from t_product_category where id=#{id}
+    </select>
+</mapper>

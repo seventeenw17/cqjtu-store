@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="2177669a-1adc-4617-9b8f-9723b6fe04e5" name="nginx" url="http://localhost">
+        <fileTransfer mountedRoot="E:\assets\nginx-1.25.0\store" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backend.springstore.product.mapper.ProductMapper">
+    <resultMap id="productMap" type="com.backend.springstore.product.pojo.entity.Product">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="item_type" property="itemType"/>
+        <result column="title" property="title"/>
+        <result column="sell_point" property="sellPoint"/>
+        <result column="price" property="price"/>
+        <result column="num" property="num"/>
+        <result column="image" property="image"/>
+        <result column="status" property="status"/>
+        <result column="priority" property="priority"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+    <insert id="addProduct">
+        insert into t_product(category_id,
+                              item_type,
+                              title,
+                              sell_point,
+                              price,
+                              num,
+                              image,
+                              status,
+                              priority,
+                              created_user,
+                              created_time
+                              )values (#{categoryId},
+                                       #{itemType},
+                                       #{title},
+                                       #{sellPoint},
+                                       #{price},
+                                       #{num},
+                                       #{image},
+                                       #{status},
+                                       #{priority},
+                                       #{createdUser},
+                                       now()
+                                       )
+    </insert>
+    <!--根据ID获取商品-->
+    <select id="getProductById" resultMap="productMap">
+        select * from t_product where id=#{productId}
+    </select>
+    <!--获取新的4条商品-->
+    <select id="getNewProductList" resultMap="productMap">
+        select * from t_product where status=1 order by created_time DESC limit 4
+    </select>
+    <!--获取热门的4条商品-->
+    <select id="getHotProductList" resultMap="productMap">
+        select * from t_product where status=1 order by priority DESC limit 4
+    </select>
+    <!--获取类型下商品数量-->
+    <select id="countByCategoryId" resultType="java.lang.Integer">
+        select count(1) from t_product where category_id=#{categoryId}
+    </select>
+    <!--商品种类分页查询-->
+    <select id="getProductByCategoryPage" resultType="com.backend.springstore.product.pojo.entity.Product">
+        select * from t_product where category_id=#{categoryId} limit #{offset},#{pageSize}
+    </select>
+    <select id="getAllProduct" resultMap="productMap">
+        select * from t_product
+    </select>
+    <!--商品数量-->
+    <select id="countProduct" resultType="java.lang.Integer">
+        select count(1) from t_product
+    </select>
+
+
+    <update id="modifyProduct">
+        update t_product set category_id=#{categoryId},
+                             item_type=#{itemType},
+                             title=#{title},
+                             sell_point=#{sellPoint},
+                             price=#{price},
+                             num=#{num},
+                             image=#{image},
+                             status=#{status},
+                             priority=#{priority},
+                             modified_user=#{modifiedUser},
+                             modified_time=now() where id=#{id}
+    </update>
+    <delete id="deleteProduct">
+        delete from t_product where id=#{id}
+    </delete>
+    <select id="getList" resultMap="productMap">
+        select * from t_product limit #{offset},#{pageSize}
+    </select>
+    <select id="countAll" resultType="java.lang.Integer">
+        select count(1) from t_product
+    </select>
+    <select id="getCategoryList"
+            resultMap="productMap">
+        select * from t_product where category_id=#{categoryId} limit #{offset},#{pageSize}
+    </select>
+    <select id="countCategory" resultType="java.lang.Integer">
+        select count(1) from t_product where category_id=#{categoryId}
+    </select>
+</mapper>

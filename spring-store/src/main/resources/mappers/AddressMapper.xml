@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backend.springstore.address.mapper.AddressMapper">
+    <!--封装查询地址列表-->
+    <resultMap id="addressMap" type="com.backend.springstore.address.pojo.entity.Address">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="user_id" property="userId"/>
+        <result column="phone" property="phone"/>
+        <result column="tel" property="tel"/>
+        <result column="tag" property="tag"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="address" property="addressDetail"/>
+        <result column="zip" property="zip"/>
+    </resultMap>
+
+    <!--获取地址列表-->
+    <select id="getAddressListByUserId" resultMap="addressMap">
+        select * from t_address where user_id=#{userId}
+    </select>
+    <!--根据编号查询地址-->
+    <select id="getAddressById" resultMap="addressMap">
+        select * from t_address where id=#{id}
+    </select>
+
+    <!--根据id删除地址-->
+    <delete id="deleteAddressById">
+        delete from t_address where id=#{id}
+    </delete>
+    <!--所有地址都设为非默认-->
+    <update id="setIsNotDefaultAllByUserId">
+        update t_address
+        set is_default=0
+        where user_id=#{userId}
+    </update>
+    <!--根据id设置默认地址-->
+    <update id="setIsDefaultById">
+        update t_address
+        set is_default=1,
+            modified_user=#{modifiedUser},
+            modified_time=now()
+        where id=#{id}
+    </update>
+    <!--根据用户ID查询已有的地址条数-->
+    <select id="countAddressByUserId" resultType="java.lang.Integer">
+        select count(1) from t_address where user_id=#{userId}
+    </select>
+    <!--新增收货地址-->
+    <insert id="addAddress">
+        insert into `t_address`(
+            `user_id`,
+            `name`,
+            `province_name`,
+            `province_code`,
+            `city_name`,
+            `city_code`,
+            `area_name`,
+            `area_code`,
+            `zip`,
+            `address`,
+            `phone`,
+            `tel`,
+            `tag`,
+            `created_user`,
+            `created_time`)
+        values (#{userId},
+                #{name},
+                #{provinceName},
+                #{provinceCode},
+                #{cityName},
+                #{cityCode},
+                #{areaName},
+                #{areaCode},
+                #{zip},
+                #{addressDetail},
+                #{phone},
+                #{tel},
+                #{tag},
+                #{createdUser},
+                now()
+               )
+    </insert>
+
+    <!--修改收货地址-->
+    <update id="updateAddress">
+        update `t_address`
+        set name=#{name},
+            province_name=#{provinceName},
+            province_code=#{provinceCode},
+            city_name=#{cityName},
+            city_code=#{cityCode},
+            area_name=#{areaName},
+            area_code=#{areaCode},
+            zip=#{zip},
+            address=#{addressDetail},
+            phone=#{phone},
+            tel=#{tel},
+            tag=#{tag},
+            modified_user=#{modifiedUser},
+            modified_time=now()
+        where id=#{id}
+    </update>
+</mapper>
